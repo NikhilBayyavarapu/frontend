@@ -3,7 +3,8 @@ import axios from 'axios';
 
 const AddStudent = () => {
   // State to manage form fields
-  const [formData, setFormData] = useState({
+
+  const defaultData = {
     sid: '',
     fname: '',
     lname: '',
@@ -15,7 +16,9 @@ const AddStudent = () => {
     busfee: '',
     tutionfee: '',
     totalmonths: '',
-  });
+  }
+
+  const [formData, setFormData] = useState(defaultData);
 
   // Handle form field changes
   const handleInputChange = (e) => {
@@ -26,70 +29,123 @@ const AddStudent = () => {
     }));
   };
 
+
+  const validateForm = (formData) => {
+    if (!formData.sid || !formData.fname || !formData.lname || !formData.parent || !formData.contact || !formData.acadyear || !formData.class || !formData.section || !formData.busfee || !formData.tutionfee || !formData.totalmonths ) {
+        return false;
+    }
+    return true;
+  };
+
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add your logic for form submission here
+
+    
+    if (!validateForm(formData)) {
+      console.log(formData)
+      window.alert("Form validation failed. Please enter all inputs correctly.");
+      return;
+    }
 
     try{
-        const response = await axios.post('http://localhost:8080/add/student',formData)
-        console.log("Form submitted successfully: ",response.data)
+      let axiosConfig = {
+        headers: {
+           'Content-Type': 'application/x-www-form-urlencoded',
+        }
+      };
+
+      const data = new URLSearchParams()
+      Object.entries(formData).forEach(([key,val])=>{
+          data.append(key,val)
+      })
+
+      const response = await axios.post('http://localhost:8080/student',data,axiosConfig)
+      console.log("Form submitted successfully: ",response.data)
 
     }catch(error){
         console.error("Error submitting form:",error.message)
     }
-    // You can add further processing or API calls here
+
+    setFormData(defaultData)
+    window.location.href = '/addStudent'
+    
   };
 
   return (
     <div>
       <h2>Student Details</h2>
       <form onSubmit={handleSubmit}>
-        <label>
-          Student ID:
-          <input type="text" name="sid" value={formData.SID} onChange={handleInputChange} />
-        </label>
-        <label>
-          First Name:
-          <input type="text" name="fname" value={formData.Fname} onChange={handleInputChange} />
-        </label>
-        <label>
-          Last Name:
-          <input type="text" name="lname" value={formData.Lname} onChange={handleInputChange} />
-        </label>
-        <label>
-          Parent:
-          <input type="text" name="parent" value={formData.Parent} onChange={handleInputChange} />
-        </label>
-        <label>
-          Contact:
-          <input type="text" name="contact" value={formData.Contact} onChange={handleInputChange} />
-        </label>
-        <label>
-          Academic Year:
-          <input type="text" name="acadyear" value={formData.Acadyear} onChange={handleInputChange} />
-        </label>
-        <label>
-          Class:
-          <input type="text" name="class" value={formData.Class} onChange={handleInputChange} />
-        </label>
-        <label>
-          Section:
-          <input type="text" name="section" value={formData.Section} onChange={handleInputChange} />
-        </label>
-        <label>
-          Bus Fees:
-          <input type="text" name="busfee" value={formData.Busfee} onChange={handleInputChange} />
-        </label>
-        <label>
-          Tution Fees:
-          <input type="text" name="tutionfee" value={formData.Tutuionfee} onChange={handleInputChange} />
-        </label>
-        <label>
-          Total Months:
-          <input type="text" name="totalmonths" value={formData.Totalmonths} onChange={handleInputChange} />
-        </label>     
-        <button type="submit">Submit</button>
+        <div>
+          <label>
+            Student ID:
+            <input type="text" name="sid"  onChange={handleInputChange} />
+          </label>
+        </div>
+        <div>
+          <label>
+            First Name:
+            <input type="text" name="fname"  onChange={handleInputChange} />
+          </label>
+        </div>
+        <div>
+          <label>
+            Last Name:
+            <input type="text" name="lname"  onChange={handleInputChange} />
+          </label>
+        </div>
+        <div>
+          <label>
+            Parent:
+            <input type="text" name="parent"  onChange={handleInputChange} />
+          </label>
+        </div>
+        <div>
+          <label>
+            Contact:
+            <input type="text" name="contact" placeholder='Eg: 1234567890'  onChange={handleInputChange} />
+          </label>
+        </div>
+        <div>
+          <label>
+            Academic Year:
+            <input type="text" name="acadyear" placeholder='Eg: 2015-16' onChange={handleInputChange} />
+          </label>
+        </div>
+        <div>
+          <label>
+            Class:
+            <input type="text" name="class" placeholder='Eg: 1 No Roman Letters'  onChange={handleInputChange} />
+          </label>
+        </div>
+        <div>
+          <label>
+            Section:
+            <input type="text" name="section" placeholder='Eg: A,B,C'  onChange={handleInputChange} />
+          </label>
+        </div>
+        <div>
+          <label>
+            Bus Fees:
+            <input type="text" name="busfee" placeholder='Eg: 1500 or 1500.00 No Symbols'  onChange={handleInputChange} />
+          </label>
+        </div>
+        <div>
+          <label>
+            Tution Fees:
+            <input type="text" name="tutionfee"  onChange={handleInputChange} />
+          </label>
+        </div>
+        <div>
+          <label>
+            Total Months:
+            <input type="text" name="totalmonths"  onChange={handleInputChange} />
+          </label>
+        </div> 
+        <div>
+          <button type="submit">Submit</button>
+        </div>   
       </form>
     </div>
   );
